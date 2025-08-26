@@ -8,10 +8,14 @@ from dotenv import load_dotenv
 # Load environment variables from .env
 load_dotenv()
 
-# LangChain tracking (your key from .env)
-os.environ['LANGCHAIN_API_KEY'] = os.getenv('LANGCHAIN_API_KEY')
-os.environ['LANGCHAIN_TRACING_V2'] = "true"
-os.environ['LANGCHAIN_PROJECT'] = "Q&A Chatbot with Groq"
+langchain_key = st.secrets.get("LANGCHAIN_API_KEY") or os.getenv("LANGCHAIN_API_KEY")
+
+if langchain_key:
+    os.environ["LANGCHAIN_API_KEY"] = langchain_key
+    os.environ["LANGCHAIN_TRACING_V2"] = "true"
+    os.environ["LANGCHAIN_PROJECT"] = "Q&A Chatbot with Groq"
+else:
+    st.error("❌ LANGCHAIN_API_KEY is missing! Add it in Streamlit Secrets or .env file.")
 
 # Prompt template
 prompt = ChatPromptTemplate.from_messages(
@@ -64,3 +68,4 @@ if user_input:
         st.warning("Please enter your Groq API key in the sidebar first.")
 else:
     st.write("Waiting for your question...")
+
